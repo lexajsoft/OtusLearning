@@ -1,12 +1,9 @@
-﻿using Lessons.Architecture.PM;
-using UniRx;
+﻿using UniRx;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace PresentationModel.Scripts
 {
-    
-    
     [CreateAssetMenu(menuName = "Create CharacterPresetScriptableObject", fileName = "CharacterPresetScriptableObject", order = 0)]
     public class CharacterPresetScriptableObject : ScriptableObject
     {

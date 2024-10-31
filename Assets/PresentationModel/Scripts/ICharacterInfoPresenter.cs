@@ -1,6 +1,5 @@
 ﻿using System;
 using Code;
-using Lessons.Architecture.PM;
 using UniRx;
 
 namespace PresentationModel.Scripts

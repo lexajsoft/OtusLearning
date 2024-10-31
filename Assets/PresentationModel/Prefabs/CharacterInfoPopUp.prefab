@@ -1271,7 +1271,7 @@ MonoBehaviour:
   _characterIcon: {fileID: 3890639336462469609}
   _progressBar: {fileID: 7181000078989604538}
   _containerStats: {fileID: 7658312039919651740}
-  _statVisualPrefab: {fileID: -2863292154135475722, guid: 5b2b91d2418d4d74a882004d11acb9e3, type: 3}
+  statViewPrefab: {fileID: -2863292154135475722, guid: 5b2b91d2418d4d74a882004d11acb9e3, type: 3}
   _levelUpButton: {fileID: 5309002182468916391}
   _addExpButton: {fileID: 2883538655504883277}
   _closeButton: {fileID: 4059152488329347142}

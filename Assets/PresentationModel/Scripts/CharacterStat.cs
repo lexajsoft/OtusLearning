@@ -2,7 +2,7 @@ using System;
 using UniRx;
 using UnityEngine;
 
-namespace Lessons.Architecture.PM
+namespace PresentationModel.Scripts
 {
     [Serializable]
     public sealed class CharacterStat

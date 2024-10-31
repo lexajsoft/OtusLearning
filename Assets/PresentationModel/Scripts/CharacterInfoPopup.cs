@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Code;
-using Lessons.Architecture.PM;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace PresentationModel.Scripts
@@ -17,7 +17,7 @@ namespace PresentationModel.Scripts
         [SerializeField] private ProgressBar _progressBar;
         
         [SerializeField] private Transform _containerStats;
-        [SerializeField] private StatVisual _statVisualPrefab;
+        [FormerlySerializedAs("_statVisualPrefab")] [SerializeField] private StatView statViewPrefab;
 
         [SerializeField] private Button _levelUpButton;
         [SerializeField] private Button _addExpButton;
@@ -117,7 +117,7 @@ namespace PresentationModel.Scripts
             DestroyStatsVisual();
             foreach (var stat in stats)
             {
-                var statVisual = Instantiate(_statVisualPrefab, _containerStats);
+                var statVisual = Instantiate(statViewPrefab, _containerStats);
                 statVisual.SetData(stat.Name.Value, stat.Value.Value.ToString());
             }
         }

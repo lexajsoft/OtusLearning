@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NaughtyAttributes;
 
-namespace Lessons.Architecture.PM
+namespace PresentationModel.Scripts
 {
     public sealed class CharacterInfo
     {
+        // оставил тут эти эвенты так как не знаю в какой момент они могли бы пригодиться
         public event Action<CharacterStat> OnStatAdded;
         public event Action<CharacterStat> OnStatRemoved;
     

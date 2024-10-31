@@ -2,7 +2,7 @@ using System;
 using NaughtyAttributes;
 using UniRx;
 
-namespace Lessons.Architecture.PM
+namespace PresentationModel.Scripts
 {
     public sealed class PlayerLevel
     {
@@ -29,10 +29,10 @@ namespace Lessons.Architecture.PM
         public PlayerLevel(int currentLevel, int currentExperience)
         {
             _currentLevel = new ReactiveProperty<int>();
-            _currentLevel.SetValueAndForceNotify(currentLevel);
+            _currentLevel.Value = currentLevel;
 
             _currentExperience = new ReactiveProperty<int>();
-            _currentExperience.SetValueAndForceNotify(currentExperience);
+            _currentExperience.Value = currentExperience;
 
             _canLevelUp = new ReactiveProperty<bool>();
             
@@ -40,8 +40,6 @@ namespace Lessons.Architecture.PM
             {
                 UpdateCanLevelUp();
             });
-            
-            UpdateCanLevelUp();
         }
 
         [Button]

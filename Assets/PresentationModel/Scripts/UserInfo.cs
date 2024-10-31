@@ -1,9 +1,7 @@
-using System;
-using NaughtyAttributes;
 using UniRx;
 using UnityEngine;
 
-namespace Lessons.Architecture.PM
+namespace PresentationModel.Scripts
 {
     public sealed class UserInfo
     {
