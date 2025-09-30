@@ -4,53 +4,43 @@ namespace ShootEmUp
 {
     public sealed class EnemyAttackAgent : MonoBehaviour
     {
-        public delegate void FireHandler(GameObject enemy, Vector2 position, Vector2 direction);
-
-        public event FireHandler OnFire;
-
         [SerializeField] private WeaponComponent weaponComponent;
         [SerializeField] private EnemyMoveAgent moveAgent;
-        [SerializeField] private float countdown;
 
-        private GameObject target;
-        private float currentTime;
+        //public delegate void FireHandler(GameObject enemy, Vector2 position, Vector2 direction);
+        public delegate void FireHandler(GameObject enemy);
+        public event FireHandler OnFire;
+        
+        private GameObject _target;
 
         public void SetTarget(GameObject target)
         {
-            this.target = target;
-        }
-
-        public void Reset()
-        {
-            this.currentTime = this.countdown;
+            _target = target;
         }
 
         private void FixedUpdate()
         {
-            if (!this.moveAgent.IsReached)
+            if (!moveAgent.IsReached)
             {
                 return;
             }
             
-            if (!this.target.GetComponent<HitPointsComponent>().IsHitPointsExists())
+            if (!_target.GetComponent<HitPointsComponent>().IsHitPointsExists())
             {
                 return;
             }
-
-            this.currentTime -= Time.fixedDeltaTime;
-            if (this.currentTime <= 0)
-            {
-                this.Fire();
-                this.currentTime += this.countdown;
-            }
+            Fire();
         }
 
         private void Fire()
         {
-            var startPosition = this.weaponComponent.Position;
-            var vector = (Vector2) this.target.transform.position - startPosition;
+            var startPosition = weaponComponent.Position;
+            var vector = _target.transform.position - (Vector3)startPosition;
             var direction = vector.normalized;
-            this.OnFire?.Invoke(this.gameObject, startPosition, direction);
+            
+            Debug.DrawLine(transform.position, transform.position + direction,Color.red);
+            moveAgent.SetDirectLook(direction);
+            OnFire?.Invoke(gameObject);
         }
     }
 }

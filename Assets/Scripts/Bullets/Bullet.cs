@@ -5,40 +5,36 @@ namespace ShootEmUp
 {
     public sealed class Bullet : MonoBehaviour
     {
-        public event Action<Bullet, Collision2D> OnCollisionEntered;
-
+        [SerializeField] private new Rigidbody2D rigidbody2D;
+        [SerializeField] private SpriteRenderer spriteRenderer;
+        public event Action<Bullet, Collider2D> OnTriggerEntered;
         [NonSerialized] public bool isPlayer;
         [NonSerialized] public int damage;
 
-        [SerializeField]
-        private new Rigidbody2D rigidbody2D;
-
-        [SerializeField]
-        private SpriteRenderer spriteRenderer;
-
-        private void OnCollisionEnter2D(Collision2D collision)
+        
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            this.OnCollisionEntered?.Invoke(this, collision);
+            OnTriggerEntered?.Invoke(this, collision);
         }
 
         public void SetVelocity(Vector2 velocity)
         {
-            this.rigidbody2D.linearVelocity = velocity;
+            rigidbody2D.linearVelocity = velocity;
         }
 
         public void SetPhysicsLayer(int physicsLayer)
         {
-            this.gameObject.layer = physicsLayer;
+            gameObject.layer = physicsLayer;
         }
-
+        
         public void SetPosition(Vector3 position)
         {
-            this.transform.position = position;
+            transform.position = position;
         }
 
         public void SetColor(Color color)
         {
-            this.spriteRenderer.color = color;
+            spriteRenderer.color = color;
         }
     }
 }

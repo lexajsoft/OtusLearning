@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace ShootEmUp
 {
@@ -6,36 +7,18 @@ namespace ShootEmUp
     {
         public float HorizontalDirection { get; private set; }
 
-        [SerializeField]
-        private GameObject character;
-
-        [SerializeField]
-        private CharacterController characterController;
-
+        public UnityEvent OnFire { get; } = new UnityEvent();
+        public UnityEvent<int> OnHorizontalMove { get; } = new UnityEvent<int>();
+        
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Space))
             {
-                characterController._fireRequired = true;
+                OnFire?.Invoke();
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                this.HorizontalDirection = -1;
-            }
-            else if (Input.GetKey(KeyCode.RightArrow))
-            {
-                this.HorizontalDirection = 1;
-            }
-            else
-            {
-                this.HorizontalDirection = 0;
-            }
-        }
-        
-        private void FixedUpdate()
-        {
-            this.character.GetComponent<MoveComponent>().MoveByRigidbodyVelocity(new Vector2(this.HorizontalDirection, 0) * Time.fixedDeltaTime);
+            HorizontalDirection = Input.GetAxis("Horizontal");
+            OnHorizontalMove?.Invoke((int)HorizontalDirection);
         }
     }
 }

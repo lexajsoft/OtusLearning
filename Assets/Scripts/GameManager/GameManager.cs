@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ShootEmUp
 {
@@ -8,6 +9,7 @@ namespace ShootEmUp
         {
             Debug.Log("Game over!");
             Time.timeScale = 0;
+            SceneManager.LoadScene(0);
         }
     }
 }

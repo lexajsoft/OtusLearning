@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -9,11 +10,26 @@ namespace ShootEmUp
 
         [SerializeField]
         private float speed = 5.0f;
-        
-        public void MoveByRigidbodyVelocity(Vector2 vector)
+
+        private Vector2 _direct;
+
+        public void SetDirectMove(Vector2 direct)
         {
-            var nextPosition = this.rigidbody2D.position + vector * this.speed;
-            this.rigidbody2D.MovePosition(nextPosition);
+            _direct = direct;
+        }
+
+        public void SetDirectLook(Vector2 direct)
+        {
+            var radian = Mathf.Atan2(direct.y, direct.x);
+            var angelDegrees = Mathf.Rad2Deg * radian;
+            
+            transform.rotation = Quaternion.Euler(0,0,angelDegrees);
+        }
+
+        private void Update()
+        {
+            var nextPosition = this.rigidbody2D.position + _direct * this.speed;
+            rigidbody2D.MovePosition(nextPosition);
         }
     }
 }
