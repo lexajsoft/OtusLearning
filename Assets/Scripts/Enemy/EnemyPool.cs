@@ -13,11 +13,11 @@ namespace ShootEmUp
         [SerializeField] private Transform _worldTransform;
         [Header("Pool")]
         [SerializeField] private Transform _container;
-        [SerializeField] private GameObject _prefab;
         
         [Inject]private DiContainer _diContainer;
-        [Inject(Id = ServiceIds.EnemyBulletConfig)] private BulletConfig _bulletConfig;
         [Inject] private GameManager _gameManager;
+        [Inject(Id = ServiceIds.EnemyBulletConfig)] private BulletConfig _bulletConfig;
+        [Inject(Id = ServiceIds.EnemyPrefab)] private GameObject _prefab;
         
         private readonly Queue<GameObject> _enemyPool = new();
         private GameObject _character;

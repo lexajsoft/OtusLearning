@@ -14,8 +14,6 @@ public static class ServiceIds
 [CreateAssetMenu(fileName = "GameConfigInstaller", menuName = "Installers/GameConfigInstaller")]
 public class SettingConfig : ScriptableObjectInstaller<SettingConfig>
 {
-    
-    
     [SerializeField] private BulletConfig _playerBulletConfig;
     [SerializeField] private BulletConfig _enemyBulletConfig;
     [SerializeField] private GameObject _playerPrefab;
@@ -32,7 +30,5 @@ public class SettingConfig : ScriptableObjectInstaller<SettingConfig>
         Container.Bind<GameObject>().WithId(ServiceIds.EnemyPrefab).FromInstance(_enemyPrefab);
         Container.Bind<GameObject>().WithId(ServiceIds.BulletPrefab).FromInstance(_bulletPrefab);
         Container.Bind<GameManager>().AsSingle();
-
-        //Container.BindInstance(this).AsSingle();
     }
 }
