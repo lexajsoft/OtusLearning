@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -9,21 +10,22 @@ namespace ShootEmUp
     {
         [Header("Spawn")]
         [SerializeField] private EnemyPositions _enemyPositions;
-        [SerializeField] private GameObject _character;
         [SerializeField] private Transform _worldTransform;
         [Header("Pool")]
         [SerializeField] private Transform _container;
         [SerializeField] private GameObject _prefab;
         
-        private readonly Queue<GameObject> _enemyPool = new();
-        
-        [Inject]private SettingConfig _settingConfig;
         [Inject]private DiContainer _diContainer;
-        private BulletConfig _bulletConfig;
+        [Inject(Id = ServiceIds.EnemyBulletConfig)] private BulletConfig _bulletConfig;
+        [Inject] private GameManager _gameManager;
+        
+        private readonly Queue<GameObject> _enemyPool = new();
+        private GameObject _character;
+        
         
         private void Awake()
         {
-            _bulletConfig = _settingConfig._enemyBulletConfig;
+            _gameManager.OnCharacterChanged += OnCharacterChanged;
             for (var i = 0; i < 7; i++)
             {
                 var enemy = _diContainer.InstantiatePrefab(_prefab, _container);
@@ -31,8 +33,25 @@ namespace ShootEmUp
             }
         }
 
+        private void OnDestroy()
+        {
+            _gameManager.OnCharacterChanged -= OnCharacterChanged;
+        }
+
+        private void OnCharacterChanged(GameObject character)
+        {
+            _character = character;
+            foreach (var obj in _enemyPool)
+            {
+                obj.GetComponent<EnemyAttackAgent>().SetTarget(_character);   
+            }
+        }
+
         public GameObject SpawnEnemy()
         {
+            if (_character == null)
+                return null;
+            
             if (!_enemyPool.TryDequeue(out var enemy))
             {
                 return null;
@@ -46,6 +65,7 @@ namespace ShootEmUp
             var attackPosition = _enemyPositions.RandomAttackPosition();
             enemy.GetComponent<EnemyMoveAgent>().SetDestination(attackPosition.position);
 
+            
             enemy.GetComponent<EnemyAttackAgent>().SetTarget(_character);
             enemy.GetComponent<WeaponComponent>().SetConfig(_bulletConfig);
             return enemy;

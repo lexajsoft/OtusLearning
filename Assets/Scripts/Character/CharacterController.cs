@@ -7,12 +7,15 @@ namespace ShootEmUp
 {
     public sealed class CharacterController : MonoBehaviour
     {
-        [SerializeField] private GameObject character; 
+        [SerializeField] private GameObject _character;
+        [SerializeField] private GameObject _container;
+        [SerializeField] private GameObject _position;
         
-        // Сериализацию оставил чтобы чекать в инспекторе и не более по факту они тут не нужны
-        [Inject][SerializeField] private InputManager _inputManager;
-        [Inject][SerializeField] private SettingConfig _settingConfig;
-        [Inject][SerializeField] private GameManager gameManager;
+        [Inject(Id = ServiceIds.PlayerPrefab)] private GameObject _characterPrefab;
+        [Inject(Id = ServiceIds.PlayerBulletConfig)] private BulletConfig _bulletConfig;
+        [Inject] private InputManager _inputManager;
+        [Inject] private GameManager _gameManager;
+        [Inject] private DiContainer _diContainer;
         
         private MoveComponent _moveComponent;
         private WeaponComponent _weapon;
@@ -20,12 +23,21 @@ namespace ShootEmUp
 
         private void OnEnable()
         {
+            CreatePlayer();
+            _gameManager.SetCharacterGameObject(_character);
             _inputManager.OnFire.AddListener(Fire);
             _inputManager.OnHorizontalMove.AddListener(HorizontalMove);
-            character.GetComponent<HitPointsComponent>().hpEmpty += this.OnCharacterDeath;
-            _moveComponent = character.GetComponent<MoveComponent>();
-            _weapon = character.GetComponent<WeaponComponent>();
-            _weapon.SetConfig(_settingConfig._playerBulletConfig);
+            _character.GetComponent<HitPointsComponent>().hpEmpty += this.OnCharacterDeath;
+            _moveComponent = _character.GetComponent<MoveComponent>();
+            _weapon = _character.GetComponent<WeaponComponent>();
+            _weapon.SetConfig(_bulletConfig);
+        }
+
+        private void CreatePlayer()
+        {
+            _character = _diContainer.InstantiatePrefab(_characterPrefab);
+            _character.transform.SetParent(_container.transform);
+            _character.transform.position = _position.transform.position;
         }
 
         private void HorizontalMove(int horizontalValue)
@@ -42,10 +54,16 @@ namespace ShootEmUp
         {
             _inputManager.OnFire.RemoveListener(Fire);
             _inputManager.OnHorizontalMove.RemoveListener(HorizontalMove);
-            character.GetComponent<HitPointsComponent>().hpEmpty -= this.OnCharacterDeath;
+            if (_character.TryGetComponent<HitPointsComponent>(out var hitPointsComponent))
+            {
+                hitPointsComponent.hpEmpty -= OnCharacterDeath;
+            }
         }
 
-        private void OnCharacterDeath(GameObject _) => this.gameManager.FinishGame();
+        private void OnCharacterDeath(GameObject _)
+        {
+            _gameManager.FinishGame();
+        }
 
         private void Update()
         {

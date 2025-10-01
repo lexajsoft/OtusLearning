@@ -1,16 +1,17 @@
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
 namespace ShootEmUp
 {
-    public sealed class InputManager : MonoBehaviour
+    public sealed class InputManager : ITickable
     {
         public float HorizontalDirection { get; private set; }
 
         public UnityEvent OnFire { get; } = new UnityEvent();
         public UnityEvent<int> OnHorizontalMove { get; } = new UnityEvent<int>();
-        
-        private void Update()
+
+        public void Tick()
         {
             if (Input.GetKey(KeyCode.Space))
             {
