@@ -12,15 +12,13 @@ public class GameManager : MonoBehaviour
     
     private Player _player;
 
-    public IEnumerator Start()
+    public void Start()
     {
-        yield return new WaitForSeconds(0.1f);
          _player = _diContainer.Resolve<Player>();
          RebuildRandomPlayerInventory();
     }
 
-    [Button]
-    public void RebuildRandomPlayerInventory()
+    private void RebuildRandomPlayerInventory()
     {
         _player.Init();
         _inventory.SetPlayer(_player);
@@ -43,5 +41,42 @@ public class GameManager : MonoBehaviour
     public void AddRandomItemToTalisman()
     {
         _player.AddTalisman();
+    }    
+    
+    [Button]
+    public void AddHealBottle()
+    {
+        _player.AddBottleHealth();
+    }  
+    
+    [Button]
+    public void AddManaBottle()
+    {
+        _player.AddBottleMana();
+    }  
+    
+    [Button]
+    public void AddComplexBottle()
+    {
+        _player.AddBottleHealthAndMana();
+    }  
+    
+    [Button]
+    public void AddRepairKit()
+    {
+        _player.AddRepairKit();
     }
+
+    [Button]
+    public void Damage(int value)
+    {
+        _player.Damage(value);
+    }
+
+    [Button]
+    public void WasteMana(int value)
+    {
+        _player.WastMana(value);
+    }
+
 }

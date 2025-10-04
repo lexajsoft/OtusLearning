@@ -19,8 +19,9 @@ namespace Inventory
         public Action<Item> OnItemUpdated;
         public Action<EquipSlot, Item> OnEquippedItem; 
         public Action<EquipSlot> OnUnEquippedItem; 
-        public Action OnInventoryChanged; 
-        
+        public Action OnInventoryChanged;
+
+        private Player _ownerPlayer;
         public Inventory()
         {
             Debug.Log("Create Inventory");
@@ -35,6 +36,26 @@ namespace Inventory
             equipped[EquipSlot.Arms] = null;
             equipped[EquipSlot.Feet] = null;
             equipped[EquipSlot.Weapon] = null;
+        }
+
+        public void SetPlayer(Player ownerPlayer)
+        {
+            _ownerPlayer = ownerPlayer;
+            // это нужно чтобы шмотки знали если что на кого ссылаться
+            for (int i = 0; i < items.Count; i++)
+            {
+                items[i].SetPlayerOwner(_ownerPlayer);
+            }
+
+            foreach (var equip in equipped)
+            {
+                equip.Value?.SetPlayerOwner(_ownerPlayer);
+            }
+        }
+
+        public List<Item> GetEquippedItems()
+        {
+            return equipped.Where(item => item.Value != null).Select(item=>item.Value).ToList();
         }
 
         public void EquipItem(Item item)
@@ -57,7 +78,7 @@ namespace Inventory
                 {
                     // надеваем
                     equipped[equipableComponent.Slot] = equipableComponent.Owner; 
-                    Debug.Log($"Одет предмет в слот {equipableComponent.Slot} {equipableComponent.Owner.name}");
+                    Debug.Log($"Одет предмет в слот {equipableComponent.Slot} - [{equipableComponent.Owner.id} {equipableComponent.Owner.name}]");
                     equipableComponent.SetIsEquip(true);
                     
                     // из списка предметов удаляем
@@ -83,7 +104,7 @@ namespace Inventory
                     equipped[equipableComponent.Slot] = equipableComponent.Owner;
                     equipableComponent.SetIsEquip(true);
                     OnEquippedItem?.Invoke(equipableComponent.Slot,equipableComponent.Owner);
-                    Debug.Log($"Одет предмет в слот {equipableComponent.Slot} {equipableComponent.Owner.name}");
+                    Debug.Log($"Одет предмет в слот {equipableComponent.Slot} - [{equipableComponent.Owner.id} {equipableComponent.Owner.name}]");
                 }
                 OnInventoryChanged?.Invoke();
             }
@@ -105,7 +126,7 @@ namespace Inventory
                 {
                     equipped[equipableComponent.Slot] = null;
                     equipableComponent.SetIsEquip(false);
-                    Debug.Log($"Снят предмет из слота {equipableComponent.Slot} {equipableComponent.Owner.name}");
+                    Debug.Log($"Снят предмет из слота {equipableComponent.Slot} - [{equipableComponent.Owner.id} {equipableComponent.Owner.name}]");
                     AddItemInner(equipableComponent.Owner);
                     OnUnEquippedItem?.Invoke(equipableComponent.Slot);
                     OnInventoryChanged?.Invoke();
@@ -115,17 +136,25 @@ namespace Inventory
         
         public void AddItem(Item item)
         {
+            item.SetPlayerOwner(_ownerPlayer);
             AddItemInner(item);
             OnInventoryChanged?.Invoke();
         }
         
         private void AddItemInner(Item item)
         {
+            item.OnItemUpdated += ItemUpdated;
+            item.OnRequestToDestroy += OnRequestToDestroy;
             items.Add(item);
             OnItemAdded?.Invoke(item);
-            Debug.Log($"Добавлен предмет в инвентарь {item.id}-{item.name}");
+            Debug.Log($"Добавлен предмет в инвентарь - [{item.id} {item.name}]");
         }
-        
+
+        private void ItemUpdated(Item item)
+        {
+            OnItemUpdated?.Invoke(item);
+        }
+
         public void RemoveItem(Item item)
         {
             RemoveItemInner(item);
@@ -134,9 +163,16 @@ namespace Inventory
         
         private void RemoveItemInner(Item item)
         {
+            item.OnItemUpdated -= ItemUpdated;
+            item.OnRequestToDestroy -= OnRequestToDestroy;
             items.Remove(item);
             OnItemRemoved?.Invoke(item);
-            Debug.Log($"Удален предмет в инвентарь {item.id}-{item.name}");
+            Debug.Log($"Удален предмет из инвентаря - [{item.id} {item.name}]");
+        }
+
+        private void OnRequestToDestroy(Item item)
+        {
+            RemoveItem(item);
         }
 
         public void RemoveAll()

@@ -6,6 +6,7 @@ using Inventory.Components;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ItemMenuHandler : MonoBehaviour
 {
@@ -13,10 +14,14 @@ public class ItemMenuHandler : MonoBehaviour
     [SerializeField] private GameObject _blockArea;
     [SerializeField] private GameObject _menu;
     [SerializeField] private GameObject _menuContainer;
+    
     [SerializeField] private GameObject _separatorPrefab;
+    [SerializeField] private GameObject _invisibleSeparatorPrefab;
+    
     [SerializeField] private MenuButton _menuButtonPrefab;
     [SerializeField] private MenuText _titleMenuTextPrefab;
     [SerializeField] private MenuText _statsTitleMenuTextPrefab;
+    [SerializeField] private MenuText _effectDescriptionMenuTextPrefab;
     [SerializeField] private MenuDoubleText _statMenuTextPrefab;
     [SerializeField] private Button _closeButton;
     
@@ -78,10 +83,12 @@ public class ItemMenuHandler : MonoBehaviour
         _menu.transform.position = _itemVisual.transform.position;
         
         CreateText(_itemVisual.Item.name, _titleMenuTextPrefab);
-        CreateSeparator();
-        if(CreateEquipAndUnEquipMenuButton())
-            CreateSeparator();
-        CreateButton("Закрыть", HideMenu);
+        CreateSeparator(_separatorPrefab);
+        if(CreateStatsBlock())
+            CreateSeparator(_separatorPrefab);
+        CreateEquipAndUnEquipMenuButton();
+        //CreateSeparator(_separatorPrefab);
+        //CreateButton("Закрыть", HideMenu);
     }
 
     private void HideMenu()
@@ -106,21 +113,89 @@ public class ItemMenuHandler : MonoBehaviour
         _menu.transform.position = _itemVisual.transform.position;
         
         CreateText(_itemVisual.Item.name, _titleMenuTextPrefab);
-        CreateSeparator();
+        CreateSeparator(_separatorPrefab);
         if(CreateStatsBlock())
-            CreateSeparator();
+            CreateSeparator(_separatorPrefab);
         if(CreateEquipAndUnEquipMenuButton())
-            CreateSeparator();
+            CreateSeparator(_separatorPrefab);
+        if (CreateUsableMenuButton())
+        {
+            CreateSeparator(_invisibleSeparatorPrefab); 
+            if (_itemVisual.Item.IsCanUseItem())
+            {
+                CreateButton("Использовать", ()=>
+                {
+                    UseItem();
+                    HideMenu();
+                });
+            }
+            else
+            {
+                CreateButton("Использовать", null, false);
+            }
+            CreateSeparator(_separatorPrefab);
+        }
+
+        CreateButton("Удалить", ()=>
+        {
+            DeleteItem();
+            HideMenu();
+        });
+        CreateSeparator(_invisibleSeparatorPrefab);
         
-        CreateButton("Удалить", DeleteItem);
-        CreateSeparator();
-        CreateButton("Закрыть", HideMenu);
+        if(IsCanDamageItem())
+        {
+            CreateButton("Поломать", () =>
+            {
+                DamageItem();
+                HideMenu();
+            });
+        }
+        //CreateSeparator(_invisibleSeparatorPrefab);
+        //CreateButton("Закрыть", HideMenu);
+    }
+
+    private void DamageItem()
+    {
+        if (IsCanDamageItem())
+        {
+            _itemVisual.Item.GetComponent<DurabilityComponent>().ReduceDurability(Random.Range(1,20));
+        }
+    }
+    
+    private bool IsCanDamageItem()
+    {
+        if (_itemVisual.Item.HasComponent<DurabilityComponent>() && _itemVisual.Item.HasComponent<EquipableComponent>())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void UseItem()
+    {
+        _itemVisual.Item.UseItem();
+    }
+
+    private bool CreateUsableMenuButton()
+    {
+        if (_itemVisual.Item.HasComponent<UsableComponent>())
+        {
+            var usebleComponent = _itemVisual.Item.GetComponent<UsableComponent>();
+            CreateText("Эффекты", _titleMenuTextPrefab);
+            for (int i = 0; i < usebleComponent.Effects.Count; i++)
+            {
+                CreateTextUsable($"При использовании : {usebleComponent.Effects[i].GetDescription()}", _effectDescriptionMenuTextPrefab);
+            }
+            return true;
+        }
+        return false;
     }
 
     private void DeleteItem()
     {
         _playerInventory.Inventory.RemoveItem(_itemVisual.Item);
-        HideMenu();
     }
 
     private bool CreateStatsBlock()
@@ -168,7 +243,6 @@ public class ItemMenuHandler : MonoBehaviour
                     _playerInventory.Inventory.UnEquipItem(equipableComponent);
                     HideMenu();
                 });
-                
             }
             else
             {
@@ -185,11 +259,12 @@ public class ItemMenuHandler : MonoBehaviour
         
     }
 
-    private void CreateButton(string text, Action clickMenu)
+    private void CreateButton(string text, Action clickMenu, bool isInteracted = true)
     {
         var menuButton = Instantiate(_menuButtonPrefab, _menuContainer.transform);
         menuButton.SetText(text);
         menuButton.OnClicked += clickMenu;
+        menuButton.SetInteractable(isInteracted);
     }
 
     private void CreateText(string text, MenuText prefab)
@@ -197,6 +272,14 @@ public class ItemMenuHandler : MonoBehaviour
         var menuText = Instantiate(prefab, _menuContainer.transform);
         menuText.SetText(text);
     }
+    
+    private void CreateTextUsable(string text, MenuText prefab)
+    {
+        var menuText = Instantiate(prefab, _menuContainer.transform);
+        menuText.SetText(text);
+    }
+    
+    
     private void CreateDoubleText(string text1, string text2, MenuDoubleText prefab)
     {
         var menuText = Instantiate(prefab, _menuContainer.transform);
@@ -204,8 +287,8 @@ public class ItemMenuHandler : MonoBehaviour
         menuText.SetText2(text2);
     }
 
-    private void CreateSeparator()
+    private void CreateSeparator(GameObject prefab)
     {
-        Instantiate(_separatorPrefab, _menuContainer.transform);
+        Instantiate(prefab, _menuContainer.transform);
     }
 }

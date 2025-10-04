@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Numerics;
 using Configs;
 using Extension;
 using Inventory.Components;
+using Inventory.Components.Effects;
 using Zenject;
 using Random = UnityEngine.Random;
 
@@ -18,7 +18,7 @@ namespace Inventory
             Item item = new Item();
             item.SetLevelRare(levelRare);
             item.AddComponent(new EquipableComponent(equipSlot));
-            
+
             switch (equipSlot)
             {
                 case EquipSlot.NONE:
@@ -29,41 +29,41 @@ namespace Inventory
                 {
                     item.SetName("Шлем");
                     item.SetIcon(_iconConfig.Heads.GetRandom());
-                    CreateProperties(ref item, levelRare);
-                    CreateDurability(ref item, levelRare);
+                    CreateProperties(item, levelRare);
+                    CreateDurability(item, levelRare);
                     break;
                 }
                 case EquipSlot.Chest:
                 {
                     item.SetName("Грудь");
-                    CreateProperties(ref item, levelRare);
-                    CreateDurability(ref item, levelRare);
+                    CreateProperties(item, levelRare);
+                    CreateDurability(item, levelRare);
                     item.SetIcon(_iconConfig.Chests.GetRandom());
-                    
+
                     break;
                 }
                 case EquipSlot.Arms:
                 {
                     item.SetName("Руки");
-                    CreateProperties(ref item, levelRare);
-                    CreateDurability(ref item, levelRare);
+                    CreateProperties(item, levelRare);
+                    CreateDurability(item, levelRare);
                     item.SetIcon(_iconConfig.Arms.GetRandom());
                     break;
                 }
                 case EquipSlot.Feet:
                 {
                     item.SetName("Ботинки");
-                    CreateProperties(ref item, levelRare);
-                    CreateDurability(ref item, levelRare);
+                    CreateProperties(item, levelRare);
+                    CreateDurability(item, levelRare);
                     item.SetIcon(_iconConfig.Feets.GetRandom());
                     break;
                 }
                 case EquipSlot.Weapon:
                 {
                     item.SetName("Топор");
-                    CreateProperties(ref item, levelRare);
-                    CreateDurability(ref item, levelRare);
-                    CreateWeaponProperties(ref item, levelRare);
+                    CreateProperties(item, levelRare);
+                    CreateDurability(item, levelRare);
+                    CreateWeaponProperties(item, levelRare);
                     item.SetIcon(_iconConfig.Weapons.GetRandom());
                     break;
                 }
@@ -72,7 +72,7 @@ namespace Inventory
             return item;
         }
 
-        private void CreateProperties(ref Item item, LevelRare levelRare)
+        private void CreateProperties(Item item, LevelRare levelRare)
         {
             // Выдача рандомных параметров
             var propertiesComponent = item.AddComponent<StatsComponent>();
@@ -94,14 +94,14 @@ namespace Inventory
             }
         }
 
-        public void CreateDurability(ref Item item, LevelRare levelRare)
+        private void CreateDurability(Item item, LevelRare levelRare)
         {
             // Выдача прочности
             int durability = 10 + ((int) levelRare * (int) levelRare * 10);
-            item.AddComponent(new DurabilityComponent(durability,durability));
+            item.AddComponent(new DurabilityComponent(durability, durability));
         }
 
-        private void CreateWeaponProperties(ref Item item, LevelRare levelRare)
+        private void CreateWeaponProperties(Item item, LevelRare levelRare)
         {
             float cooldown = Random.Range(2, 3f);
             int damageMin = Random.Range(2 + 2 * (int) levelRare, 4 + 4 * (int) levelRare);
@@ -119,11 +119,11 @@ namespace Inventory
             item.SetLevelRare(LevelRare.Normal);
             item.SetName("Какая то жратва");
             item.SetIcon(_iconConfig.Items.GetRandom());
-            item.AddComponent(new StackableComponent(Random.Range(0,10),10));
-            item.AddComponent<UseAbleComponent>();
+            item.AddComponent(new StackableComponent(Random.Range(0, 10), 10));
+            item.AddComponent<UsableComponent>();
             return item;
         }
-        
+
         public Item CreateTalisman()
         {
             Item item = new Item();
@@ -131,7 +131,72 @@ namespace Inventory
             item.SetName("Талисман");
             item.SetIcon(_iconConfig.Items.GetRandom());
             item.AddComponent<DefaultAlwaysEquippedComponent>();
-            CreateProperties(ref item, LevelRare.Rare);
+            CreateProperties(item, LevelRare.Rare);
+            return item;
+        }
+
+        public Item CreateBottleHeal(LevelRare levelRare)
+        {
+            Item item = new Item();
+            item.SetLevelRare(levelRare);
+            item.SetName("Зелье - Здоровья");
+            item.SetIcon(_iconConfig.Bottle.GetRandom());
+
+            int countHealth = 10 + (int) levelRare * 10;
+            int useCount = 1 + (int) levelRare;
+
+            item.AddComponent(new DurabilityComponent(useCount, useCount));
+
+            var usableComponent = item.AddComponent<UsableComponent>();
+            usableComponent.Effects.Add(new HealEffect() {Value = countHealth});
+            return item;
+        }
+
+        public Item CreateBottleMana(LevelRare levelRare)
+        {
+            Item item = new Item();
+            item.SetLevelRare(levelRare);
+            item.SetName("Зелье - Маны");
+            item.SetIcon(_iconConfig.Bottle.GetRandom());
+
+            int countMana = 10 + (int) levelRare * 10;
+            int useCount = 1 + (int) levelRare;
+
+            item.AddComponent(new DurabilityComponent(useCount, useCount));
+
+            var usableComponent = item.AddComponent<UsableComponent>();
+            usableComponent.Effects.Add(new ManaEffect() {Value = countMana});
+            return item;
+        }
+
+        public Item CreateComplexBottle(LevelRare levelRare)
+        {
+            Item item = new Item();
+            item.SetLevelRare(levelRare);
+            item.SetName("Зелье - БРИЗ");
+            item.SetIcon(_iconConfig.Bottle.GetRandom());
+
+            int countMana = 5 + Random.Range((int) levelRare, (int) levelRare * (int) levelRare);
+            int countHealth = 5 + Random.Range((int) levelRare, (int) levelRare * (int) levelRare);
+            int useCount = 1 + (int) levelRare;
+
+            item.AddComponent(new DurabilityComponent(useCount, useCount));
+
+            var usableComponent = item.AddComponent<UsableComponent>();
+            usableComponent.Effects.Add(new HealEffect() {Value = countHealth});
+            usableComponent.Effects.Add(new ManaEffect() {Value = countMana});
+            return item;
+        }
+
+        public Item CreateRepairKit()
+        {
+            Item item = new Item();
+            item.SetLevelRare(LevelRare.Default);
+            item.SetName("Ремкомплект");
+            item.SetIcon(_iconConfig.Items.GetRandom());
+            item.AddComponent(new StackableComponent(1, 1));
+            var usableComponent = item.AddComponent<UsableComponent>();
+            usableComponent.Effects.Add(new RepairEffect() {Value = Random.Range(4, 20)});
             return item;
         }
     }

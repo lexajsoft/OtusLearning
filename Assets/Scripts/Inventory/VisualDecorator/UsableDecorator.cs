@@ -2,7 +2,7 @@
 
 namespace Inventory.VisualDecorator
 {
-    public class UseableDecorator : DecoratorBase<UseAbleComponent>
+    public class UsableDecorator : DecoratorBase<UsableComponent>
     {
         public override void UpdateVisual()
         {

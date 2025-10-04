@@ -3,20 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using Inventory.Components;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Inventory
 {
     [Serializable]
-    public class Item
+    public partial class Item
     {
         private static int NextID = 0;
+        [NonSerialized] private Player _player = null;
+
         [field: SerializeField] public int id { get; private set; }
         [field: SerializeField] public string name { get; private set; }
         [field: SerializeField] public int cost { get; private set; }
         [field: SerializeField] public  List<ItemComponent> _components{ get; private set; } = new List<ItemComponent>();
         [field: SerializeField] public  Sprite icon{ get; private set; }
         [field: SerializeField] public  LevelRare levelRare{ get; private set; } = LevelRare.Default;
-        
+
+        public Action<Item> OnItemUpdated { get; set; }
+        public Action<Item> OnRequestToDestroy{ get; set; }
+
+        public Player GetOwnerPlayer()
+        {
+            Debug.Log("GetOwnerPlayer:" + _player.ToString());
+            return _player;
+        }
+
+        public void SetPlayerOwner(Player player)
+        {
+            _player = player;
+        }
+
         public Item()
         {
             id = NextID++;
@@ -100,5 +117,17 @@ namespace Inventory
         {
             this.name = name;
         }
+
+        public void RequestToDestroy()
+        {
+            OnRequestToDestroy?.Invoke(this);
+        }
+
+        public void ItemUpdated()
+        {
+            OnItemUpdated?.Invoke(this);
+        }
     }
+
+    
 }

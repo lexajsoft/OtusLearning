@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 7760183285637871298}
   - component: {fileID: 5601335098070991411}
   m_Layer: 5
-  m_Name: UseAbleDecorator
+  m_Name: UsableDecorator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

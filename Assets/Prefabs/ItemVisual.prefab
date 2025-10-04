@@ -446,7 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _container: {fileID: 5667022141811666204}
   _durabilityDecorator: {fileID: 3147870285788521861, guid: 0b26ef99fcc5c534bb7430c16bb40979, type: 3}
-  _useableDecorator: {fileID: 5601335098070991411, guid: 15c38a2c82b30bb4093d693a047bc87a, type: 3}
+  usableDecorator: {fileID: 5601335098070991411, guid: 15c38a2c82b30bb4093d693a047bc87a, type: 3}
   _stackableDecorator: {fileID: 2126223952006242954, guid: a2b49145df8557d48b26de058458862c, type: 3}
   _equipableDecorator: {fileID: 7119887627848464701, guid: 8309fe8b6de66e44ba54bb3fa5df46d6, type: 3}
 --- !u!1 &6671562657455388760

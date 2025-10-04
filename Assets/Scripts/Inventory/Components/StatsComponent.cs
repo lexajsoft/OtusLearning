@@ -16,5 +16,7 @@ namespace Inventory.Components
         {
             this.properties = properties;
         }
+
+        
     }
 }

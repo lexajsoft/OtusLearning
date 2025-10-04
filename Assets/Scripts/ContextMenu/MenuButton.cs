@@ -26,4 +26,9 @@ public class MenuButton : MonoBehaviour
     {
         _text.text = text;
     }
+
+    public void SetInteractable(bool interact = true)
+    {
+        _button.interactable = interact;
+    }
 }

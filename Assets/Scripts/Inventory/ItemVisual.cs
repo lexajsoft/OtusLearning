@@ -64,8 +64,6 @@ namespace Inventory
             UpdateVisual();
         }
 
-        
-
         protected virtual void UpdateVisual()
         {
             if (_item != null)
@@ -81,7 +79,18 @@ namespace Inventory
                 _iconItem.sprite = _item.icon;
                 _nameText.text = _item.name;
             }
+
+            if (_isUserDecorator)
+            {
+                _itemDecorator.UpdateVisual();
+            }
+
         }
 
+        public void Refresh()
+        {
+            UpdateVisual();
+            Debug.Log("Updated Visual Item");
+        }
     }
 }

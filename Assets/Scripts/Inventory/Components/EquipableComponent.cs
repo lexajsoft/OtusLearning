@@ -29,7 +29,7 @@ namespace Inventory.Components
         
         public void OnEquip()
         {
-            
+            // можно придумать сюда другой какой то эффект....но зачем....
         }
 
         public void OnUnEquip()

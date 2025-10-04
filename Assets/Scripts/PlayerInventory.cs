@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Extensions;
@@ -15,7 +16,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private ItemVisual _prefab;
     [SerializeField] private GameObject _itemsContainer;
 
-    private Player _player = null;
+    private Player _player;
 
     // инвентарь игрока
     public Inventory.Inventory Inventory => _player != null? _player.inventory : null;
@@ -99,6 +100,12 @@ public class PlayerInventory : MonoBehaviour
         Inventory.OnItemRemoved += OnItemRemoved;
         Inventory.OnEquippedItem += OnEquippedItem;
         Inventory.OnUnEquippedItem += OnUnEquippedItem;
+        Inventory.OnItemUpdated += OnItemUpdated;
+    }
+
+    private void OnItemUpdated(Item obj)
+    {
+        _createdItemVisuals[obj].Refresh();
     }
 
     private void OnUnEquippedItem(EquipSlot slot)
@@ -120,6 +127,7 @@ public class PlayerInventory : MonoBehaviour
         Inventory.OnItemRemoved -= OnItemRemoved;
         Inventory.OnEquippedItem -= OnEquippedItem;
         Inventory.OnUnEquippedItem -= OnUnEquippedItem;
+        Inventory.OnItemUpdated -= OnItemUpdated;
     }
 
     private void OnItemRemoved(Item item)

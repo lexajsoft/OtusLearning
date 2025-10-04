@@ -1,3 +1,4 @@
+using System;
 using Extensions;
 using UnityEngine;
 
@@ -7,14 +8,32 @@ namespace Inventory
     {
         [SerializeField] private GameObject _container;
         [SerializeField] private MenuDoubleText _menuDoubleText;
-    
-        [SerializeField] private Player _player;
+        [SerializeField] private ResourcesProgressBar _healthResourcesProgressBar;
+        [SerializeField] private ResourcesProgressBar _manaResourcesProgressBar;
+            
+        
+        [NonSerialized] private Player _player;
         public void SetPlayer(Player player)
         {
             DeActivateListener();
             _player = player;
             ActivateListener();
             Rebuild();
+            
+            _player.Health.OnValueUpdated += OnHealthUpdate;
+            OnHealthUpdate();
+            _player.Mana.OnValueUpdated += OnManaUpdate;
+            OnManaUpdate();
+        }
+
+        private void OnHealthUpdate()
+        {
+            _healthResourcesProgressBar.SetData(_player.Health);
+        }
+        
+        private void OnManaUpdate()
+        {
+            _manaResourcesProgressBar.SetData(_player.Mana);
         }
 
         private void ActivateListener()
@@ -24,7 +43,8 @@ namespace Inventory
 
         private void DeActivateListener()
         {
-            _player.OnCurrentCharacteristicsChanged -= OnCurrentCharacteristicsChanged;
+            if(_player != null)
+                _player.OnCurrentCharacteristicsChanged -= OnCurrentCharacteristicsChanged;
         }
     
         private void OnCurrentCharacteristicsChanged()

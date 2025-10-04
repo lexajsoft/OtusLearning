@@ -12,6 +12,8 @@ namespace Configs
         public List<Sprite> Arms;
         public List<Sprite> Chests;
         public List<Sprite> Items;
+        public List<Sprite> Bottle;
+        public List<Sprite> Foods;
 
         public IconConfig GetCopy()
         {
