@@ -16,13 +16,13 @@ MonoBehaviour:
   - stat: 1
     Value: 0
   - stat: 2
-    Value: 20
+    Value: 50
   - stat: 3
     Value: 1
   - stat: 4
-    Value: 4
+    Value: 20
   - stat: 5
-    Value: 0
+    Value: 1
   - stat: 6
     Value: 0
   - stat: 7
