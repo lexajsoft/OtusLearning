@@ -1,11 +1,12 @@
 ﻿using System;
+using UnityEngine.Serialization;
 
 namespace Inventory.Components
 {
     [Serializable]
-    public class Property
+    public class Stat
     {
-        public Characteristics Characteristic;
+        public Stats stat;
         public int Value;
     }
 }

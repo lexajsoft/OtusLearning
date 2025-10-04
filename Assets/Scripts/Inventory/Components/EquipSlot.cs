@@ -5,12 +5,11 @@ namespace Inventory.Components
     [Serializable]
     public enum EquipSlot
     {
-        NONE,
+        NONE = 0,
         Head,
         Chest,
         Arms,
         Feet,
         Weapon,
-        UseableItem
     }
 }

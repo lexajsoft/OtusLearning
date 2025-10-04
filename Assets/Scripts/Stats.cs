@@ -1,4 +1,4 @@
-﻿public enum Characteristics
+﻿public enum Stats
 {
     // если где то будет NONE значит где то ошибка
     NONE,

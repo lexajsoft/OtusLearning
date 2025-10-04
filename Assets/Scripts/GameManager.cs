@@ -1,4 +1,5 @@
 using System.Collections;
+using Inventory;
 using TriInspector;
 using UnityEngine;
 using Zenject;
@@ -7,6 +8,8 @@ public class GameManager : MonoBehaviour
 {
     [Inject] private DiContainer _diContainer;
     [SerializeField] private PlayerInventory _inventory;
+    [SerializeField] private StatsVisual _statsVisual;
+    
     private Player _player;
 
     public IEnumerator Start()
@@ -19,7 +22,26 @@ public class GameManager : MonoBehaviour
     [Button]
     public void RebuildRandomPlayerInventory()
     {
-        _player.CreateRandomInventory();
+        _player.Init();
         _inventory.SetPlayer(_player);
+        _statsVisual.SetPlayer(_player);
+    }
+    
+    [Button]
+    public void AddRandomItemToInventory()
+    {
+        _player.AddTestArmor();
+    }
+    
+    [Button]
+    public void AddRandomItemEtc()
+    {
+        _player.AddEtc();
+    }
+    
+    [Button]
+    public void AddRandomItemToTalisman()
+    {
+        _player.AddTalisman();
     }
 }

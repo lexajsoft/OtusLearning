@@ -8,7 +8,7 @@ namespace Inventory.Components
     {
         EquipSlot Slot { get; }
         void OnEquip();
-        void OnUnequip();
+        void OnUnEquip();
     }
     
     [Serializable]
@@ -16,6 +16,7 @@ namespace Inventory.Components
     {
         [field: SerializeField] public EquipSlot Slot{ get; private set; }
         public bool IsEquiped;
+
         public EquipableComponent()
         {
             Slot = EquipSlot.NONE;
@@ -31,9 +32,14 @@ namespace Inventory.Components
             
         }
 
-        public void OnUnequip()
+        public void OnUnEquip()
         {
             
+        }
+
+        public void SetIsEquip(bool isEquip)
+        {
+            IsEquiped = isEquip;
         }
     }
 }

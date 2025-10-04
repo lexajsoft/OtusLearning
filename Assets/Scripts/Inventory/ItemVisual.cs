@@ -1,4 +1,6 @@
-﻿using Configs;
+﻿using System;
+using System.Collections.Generic;
+using Configs;
 using Inventory.VisualDecorator;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,28 +11,76 @@ namespace Inventory
 {
     public class ItemVisual : MonoBehaviour
     {
-        [Inject] private LevelRareColorConfig _levelRareColorConfig;
-        [SerializeField] private Image _icon;
-        [SerializeField] private Image _background;
-        [SerializeField] private TMPro.TextMeshProUGUI _nameText;
-        public UnityAction<Item> OnChanged; 
-        [SerializeField]private Item _item;
-        [SerializeField] private ItemDecorator _itemDecorator;
+        [Inject] protected LevelRareColorConfig _levelRareColorConfig;
+        
+        [SerializeField] private Button _button;
+        [SerializeField] protected Image _iconItem;
+        [SerializeField] protected TMPro.TextMeshProUGUI _nameText;
+        [SerializeField] protected List<Image> _recoloringElements;
+
+        [Space]
+        // включен SerializeField только для проверок и не более
+        [SerializeField] private bool _isUserDecorator;
+        [SerializeField] protected ItemDecorator _itemDecorator;
+        [SerializeField] protected Item _item;
+        
+        public UnityAction<Item> OnChanged;
+        public UnityAction<ItemVisual> OnClicked;
+
+        public Item Item => _item;
+        
+        private void OnEnable()
+        {
+            _button.onClick.AddListener(Click);
+        }
+
+        private void OnDisable()
+        {
+            _button.onClick.RemoveListener(Click);
+        }
+
+        private void Click()
+        {
+            OnClicked?.Invoke(this);
+        }
+
         public void SetItem(Item item)
         {
             _item = item;
             OnChanged?.Invoke(_item);
-            _itemDecorator.SetItem(_item);
+
+            if(_itemDecorator != null)
+            {
+                if (_isUserDecorator)
+                {
+                    _itemDecorator.SetItem(_item);
+                }
+                else
+                {
+                    _itemDecorator.SetItem(null);
+                }
+            }
                 
             UpdateVisual();
         }
 
+        
+
         protected virtual void UpdateVisual()
         {
-            _background.color = _levelRareColorConfig.GetColorByLevelRare(_item.levelRare);
-            _icon.sprite = _item.icon;
-            _nameText.text = _item.name;
+            if (_item != null)
+            {
+                var color = _levelRareColorConfig.GetColorByLevelRare(_item.levelRare);
 
+                for (int i = 0; i < _recoloringElements.Count; i++)
+                {
+                    _recoloringElements[i].color = color;
+                }
+
+                _nameText.color = color;
+                _iconItem.sprite = _item.icon;
+                _nameText.text = _item.name;
+            }
         }
 
     }

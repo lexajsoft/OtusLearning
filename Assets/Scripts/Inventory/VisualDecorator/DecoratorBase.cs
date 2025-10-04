@@ -7,6 +7,7 @@ namespace Inventory.VisualDecorator
     {
         protected T _itemComponent;
         protected GameObject _container;
+
         public void SetContainer(GameObject container)
         {
             _container = container;

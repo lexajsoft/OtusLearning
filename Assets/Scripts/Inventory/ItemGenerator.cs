@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 using Configs;
 using Extension;
 using Inventory.Components;
@@ -29,19 +30,23 @@ namespace Inventory
                     item.SetName("Шлем");
                     item.SetIcon(_iconConfig.Heads.GetRandom());
                     CreateProperties(ref item, levelRare);
+                    CreateDurability(ref item, levelRare);
                     break;
                 }
                 case EquipSlot.Chest:
                 {
-                    item.SetName("Руки");
+                    item.SetName("Грудь");
                     CreateProperties(ref item, levelRare);
+                    CreateDurability(ref item, levelRare);
                     item.SetIcon(_iconConfig.Chests.GetRandom());
+                    
                     break;
                 }
                 case EquipSlot.Arms:
                 {
                     item.SetName("Руки");
                     CreateProperties(ref item, levelRare);
+                    CreateDurability(ref item, levelRare);
                     item.SetIcon(_iconConfig.Arms.GetRandom());
                     break;
                 }
@@ -49,6 +54,7 @@ namespace Inventory
                 {
                     item.SetName("Ботинки");
                     CreateProperties(ref item, levelRare);
+                    CreateDurability(ref item, levelRare);
                     item.SetIcon(_iconConfig.Feets.GetRandom());
                     break;
                 }
@@ -56,6 +62,8 @@ namespace Inventory
                 {
                     item.SetName("Топор");
                     CreateProperties(ref item, levelRare);
+                    CreateDurability(ref item, levelRare);
+                    CreateWeaponProperties(ref item, levelRare);
                     item.SetIcon(_iconConfig.Weapons.GetRandom());
                     break;
                 }
@@ -67,8 +75,8 @@ namespace Inventory
         private void CreateProperties(ref Item item, LevelRare levelRare)
         {
             // Выдача рандомных параметров
-            var propertiesComponent = item.AddComponent<PropertiesComponent>();
-            var values = Enum.GetValues(typeof(Characteristics)).Cast<Characteristics>().ToList();
+            var propertiesComponent = item.AddComponent<StatsComponent>();
+            var values = Enum.GetValues(typeof(Stats)).Cast<Stats>().ToList();
 
             int countProperties = (int) levelRare;
             for (int i = 0; i < countProperties; i++)
@@ -77,17 +85,54 @@ namespace Inventory
                     break;
 
                 int index = Random.Range(1, values.Count());
-                propertiesComponent.properties.Add(new Property()
+                propertiesComponent.properties.Add(new Stat()
                 {
-                    Characteristic = values[index],
+                    stat = values[index],
                     Value = Random.Range(1, 20)
                 });
                 values.RemoveAt(index);
             }
+        }
 
+        public void CreateDurability(ref Item item, LevelRare levelRare)
+        {
             // Выдача прочности
             int durability = 10 + ((int) levelRare * (int) levelRare * 10);
             item.AddComponent(new DurabilityComponent(durability,durability));
+        }
+
+        private void CreateWeaponProperties(ref Item item, LevelRare levelRare)
+        {
+            float cooldown = Random.Range(2, 3f);
+            int damageMin = Random.Range(2 + 2 * (int) levelRare, 4 + 4 * (int) levelRare);
+            int damageMax = Random.Range(5 + 2 * (int) levelRare, 8 + 4 * (int) levelRare);
+            var damage = new UnityEngine.Vector2(damageMin, damageMax);
+
+            var weaponComponent = new WeaponComponent(damage, cooldown);
+            // Выдача рандомных параметров
+            item.AddComponent(weaponComponent);
+        }
+
+        public Item CreateEtc()
+        {
+            Item item = new Item();
+            item.SetLevelRare(LevelRare.Normal);
+            item.SetName("Какая то жратва");
+            item.SetIcon(_iconConfig.Items.GetRandom());
+            item.AddComponent(new StackableComponent(Random.Range(0,10),10));
+            item.AddComponent<UseAbleComponent>();
+            return item;
+        }
+        
+        public Item CreateTalisman()
+        {
+            Item item = new Item();
+            item.SetLevelRare(LevelRare.Rare);
+            item.SetName("Талисман");
+            item.SetIcon(_iconConfig.Items.GetRandom());
+            item.AddComponent<DefaultAlwaysEquippedComponent>();
+            CreateProperties(ref item, LevelRare.Rare);
+            return item;
         }
     }
 }

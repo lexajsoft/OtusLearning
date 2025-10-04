@@ -1,0 +1,211 @@
+using System;
+using System.Net;
+using Extensions;
+using Inventory;
+using Inventory.Components;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+
+public class ItemMenuHandler : MonoBehaviour
+{
+    [SerializeField] private PlayerInventory _playerInventory;
+    [SerializeField] private GameObject _blockArea;
+    [SerializeField] private GameObject _menu;
+    [SerializeField] private GameObject _menuContainer;
+    [SerializeField] private GameObject _separatorPrefab;
+    [SerializeField] private MenuButton _menuButtonPrefab;
+    [SerializeField] private MenuText _titleMenuTextPrefab;
+    [SerializeField] private MenuText _statsTitleMenuTextPrefab;
+    [SerializeField] private MenuDoubleText _statMenuTextPrefab;
+    [SerializeField] private Button _closeButton;
+    
+    private bool _isOpened = false;
+    private ItemVisual _itemVisual;
+
+    private void OnEnable()
+    {
+        _playerInventory.OnItemVisualClicked += OnItemVisualClicked;
+        _playerInventory.OnItemSlotVisualClicked += OnItemSlotVisualClicked;
+        _closeButton.onClick.AddListener(HideMenu);
+        _blockArea.GetComponent<Button>().onClick.AddListener(HideMenu);
+    }
+    private void OnDisable()
+    {
+        _playerInventory.OnItemVisualClicked -= OnItemVisualClicked;
+        _playerInventory.OnItemSlotVisualClicked -= OnItemSlotVisualClicked;
+        _closeButton.onClick.RemoveListener(HideMenu);
+        _blockArea.GetComponent<Button>().onClick.RemoveListener(HideMenu);
+    }
+    private void OnItemVisualClicked(ItemVisual itemVisual)
+    {
+        if (_isOpened)
+        {
+            HideMenu();
+        }
+        else
+        {
+            _itemVisual = itemVisual;
+            ShowMenu();
+        }
+    }
+    
+    private void OnItemSlotVisualClicked(ItemVisual itemVisual)
+    {
+        if (_isOpened)
+        {
+            HideMenu();
+        }
+        else
+        {
+            _itemVisual = itemVisual;
+            ShowMenuUnEquip();
+        }
+    }
+
+    private void ShowMenuUnEquip()
+    {
+        if(_itemVisual.Item == null)
+            return;
+        
+        // Активация блок зоны
+        _blockArea.SetActive(true);
+        
+        _menu.SetActive(true);
+        _menuContainer.transform.DestroyAll();
+
+        // перемещение к карточке
+        _menu.transform.position = _itemVisual.transform.position;
+        
+        CreateText(_itemVisual.Item.name, _titleMenuTextPrefab);
+        CreateSeparator();
+        if(CreateEquipAndUnEquipMenuButton())
+            CreateSeparator();
+        CreateButton("Закрыть", HideMenu);
+    }
+
+    private void HideMenu()
+    {
+        _isOpened = false;
+        _blockArea.SetActive(false);
+        _menu.SetActive(false);
+    }
+
+    private void ShowMenu()
+    {
+        if(_itemVisual.Item == null)
+            return;
+        
+        // Активация блок зоны
+        _blockArea.SetActive(true);
+        
+        _menu.SetActive(true);
+        _menuContainer.transform.DestroyAll();
+
+        // перемещение к карточке
+        _menu.transform.position = _itemVisual.transform.position;
+        
+        CreateText(_itemVisual.Item.name, _titleMenuTextPrefab);
+        CreateSeparator();
+        if(CreateStatsBlock())
+            CreateSeparator();
+        if(CreateEquipAndUnEquipMenuButton())
+            CreateSeparator();
+        
+        CreateButton("Удалить", DeleteItem);
+        CreateSeparator();
+        CreateButton("Закрыть", HideMenu);
+    }
+
+    private void DeleteItem()
+    {
+        _playerInventory.Inventory.RemoveItem(_itemVisual.Item);
+        HideMenu();
+    }
+
+    private bool CreateStatsBlock()
+    {
+        bool isAny = false;
+        // Оружие
+        if (_itemVisual.Item.HasComponent<WeaponComponent>())
+        {
+            var weaponComponent = _itemVisual.Item.GetComponent<WeaponComponent>();
+                CreateText("Атака", _statsTitleMenuTextPrefab);
+                string atkText = $"{weaponComponent.minMaxDamage.x} - {weaponComponent.minMaxDamage.y}";
+                string cooldown = $"{(1f / weaponComponent.cooldown).ToString("F2")}";
+                
+                CreateDoubleText("Урон", atkText, _statMenuTextPrefab);
+                CreateDoubleText("Скорость", cooldown, _statMenuTextPrefab);
+                isAny = true;
+        }
+        
+        // Статы
+        if (_itemVisual.Item.HasComponent<StatsComponent>())
+        {
+            var statsComponent = _itemVisual.Item.GetComponent<StatsComponent>();
+            if (statsComponent.properties.Count > 0)
+            {
+                CreateText("Характеристики", _statsTitleMenuTextPrefab);
+                for (int i = 0; i < statsComponent.properties.Count; i++)
+                {
+                    CreateDoubleText(statsComponent.properties[i].stat.ToString(),statsComponent.properties[i].Value.ToString(), _statMenuTextPrefab);
+                }
+                isAny = true;
+            }
+        }
+        return isAny ;
+    }
+
+    private bool CreateEquipAndUnEquipMenuButton()
+    {
+        if (_itemVisual.Item.HasComponent<EquipableComponent>())
+        {
+            var equipableComponent = _itemVisual.Item.GetComponent<EquipableComponent>();
+            if (equipableComponent.IsEquiped)
+            {
+                CreateButton("Снять", () =>
+                {
+                    _playerInventory.Inventory.UnEquipItem(equipableComponent);
+                    HideMenu();
+                });
+                
+            }
+            else
+            {
+                CreateButton("Надеть", () =>
+                {
+                    _playerInventory.Inventory.EquipItem(equipableComponent);
+                    HideMenu();
+                });
+                
+            }
+            return true;
+        }
+        return false;
+        
+    }
+
+    private void CreateButton(string text, Action clickMenu)
+    {
+        var menuButton = Instantiate(_menuButtonPrefab, _menuContainer.transform);
+        menuButton.SetText(text);
+        menuButton.OnClicked += clickMenu;
+    }
+
+    private void CreateText(string text, MenuText prefab)
+    {
+        var menuText = Instantiate(prefab, _menuContainer.transform);
+        menuText.SetText(text);
+    }
+    private void CreateDoubleText(string text1, string text2, MenuDoubleText prefab)
+    {
+        var menuText = Instantiate(prefab, _menuContainer.transform);
+        menuText.SetText1(text1);
+        menuText.SetText2(text2);
+    }
+
+    private void CreateSeparator()
+    {
+        Instantiate(_separatorPrefab, _menuContainer.transform);
+    }
+}
