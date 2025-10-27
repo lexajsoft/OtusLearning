@@ -5,20 +5,21 @@ namespace ShootEmUp
 {
     public sealed class HitPointsComponent : MonoBehaviour
     {
+        [SerializeField] private int hitPoints;
         public event Action<GameObject> hpEmpty;
         
-        [SerializeField] private int hitPoints;
         
-        public bool IsHitPointsExists() {
-            return this.hitPoints > 0;
+        public bool IsHitPointsExists() 
+        {
+            return hitPoints > 0;
         }
 
         public void TakeDamage(int damage)
         {
-            this.hitPoints -= damage;
-            if (this.hitPoints <= 0)
+            hitPoints -= damage;
+            if (hitPoints <= 0)
             {
-                this.hpEmpty?.Invoke(this.gameObject);
+                hpEmpty?.Invoke(gameObject);
             }
         }
     }

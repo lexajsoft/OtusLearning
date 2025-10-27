@@ -25,9 +25,9 @@ namespace ShootEmUp
         {
             CreatePlayer();
             _gameManager.SetCharacterGameObject(_character);
-            _inputManager.OnFire.AddListener(Fire);
-            _inputManager.OnHorizontalMove.AddListener(HorizontalMove);
-            _character.GetComponent<HitPointsComponent>().hpEmpty += this.OnCharacterDeath;
+            _inputManager.OnFire += Fire;
+            _inputManager.OnHorizontalMove += HorizontalMove;
+            _character.GetComponent<HitPointsComponent>().hpEmpty += OnCharacterDeath;
             _moveComponent = _character.GetComponent<MoveComponent>();
             _weapon = _character.GetComponent<WeaponComponent>();
             _weapon.SetConfig(_bulletConfig);
@@ -52,8 +52,8 @@ namespace ShootEmUp
 
         private void OnDisable()
         {
-            _inputManager.OnFire.RemoveListener(Fire);
-            _inputManager.OnHorizontalMove.RemoveListener(HorizontalMove);
+            _inputManager.OnFire += Fire;
+            _inputManager.OnHorizontalMove += HorizontalMove;
             if (_character.TryGetComponent<HitPointsComponent>(out var hitPointsComponent))
             {
                 hitPointsComponent.hpEmpty -= OnCharacterDeath;

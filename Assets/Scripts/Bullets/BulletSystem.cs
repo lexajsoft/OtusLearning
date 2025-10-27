@@ -6,15 +6,14 @@ namespace ShootEmUp
     public sealed class BulletSystem : MonoBehaviour
     {
         [SerializeField] private int initialCount = 50;
-        
         [SerializeField] private Transform container;
         [SerializeField] private Bullet prefab;
         [SerializeField] private Transform worldTransform;
         [SerializeField] private LevelBounds levelBounds;
 
-        private Queue<Bullet> _bulletPool = new();
-        private HashSet<Bullet> _activeBullets = new();
-        private List<Bullet> _cache = new();
+        private readonly Queue<Bullet> _bulletPool = new();
+        private readonly HashSet<Bullet> _activeBullets = new();
+        private readonly List<Bullet> _cache = new();
         
         private void Awake()
         {

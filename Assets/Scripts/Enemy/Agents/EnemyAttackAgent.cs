@@ -7,7 +7,6 @@ namespace ShootEmUp
         [SerializeField] private WeaponComponent weaponComponent;
         [SerializeField] private EnemyMoveAgent moveAgent;
 
-        //public delegate void FireHandler(GameObject enemy, Vector2 position, Vector2 direction);
         public delegate void FireHandler(GameObject enemy);
         public event FireHandler OnFire;
         

@@ -5,9 +5,11 @@ namespace ShootEmUp
     public sealed class EnemyMoveAgent : MonoBehaviour
     {
         [SerializeField] private MoveComponent moveComponent;
+        [SerializeField] private float _distanceToStopReached = 0.25f;
         
         public bool IsReached { get; private set; }
         private Vector2 destination;
+         
 
         public void SetDestination(Vector2 endPoint)
         {
@@ -29,7 +31,7 @@ namespace ShootEmUp
             }
             
             var vector = destination - (Vector2) transform.position;
-            if (vector.magnitude <= 0.25f)
+            if (vector.magnitude <= _distanceToStopReached)
             {
                 IsReached = true;
                 return;

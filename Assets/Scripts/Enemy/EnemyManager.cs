@@ -8,21 +8,21 @@ namespace ShootEmUp
     public sealed class EnemyManager : MonoBehaviour
     {
         [SerializeField] private EnemyPool _enemyPool;
-        
+        [SerializeField] private float _spawnDelay = 1f;
         private readonly HashSet<GameObject> _activeEnemies = new();
 
         private IEnumerator Start()
         {
             while (true)
             {
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(_spawnDelay);
                 var enemy = _enemyPool.SpawnEnemy();
                 if (enemy != null)
                 {
                     if (_activeEnemies.Add(enemy))
                     {
-                        enemy.GetComponent<HitPointsComponent>().hpEmpty += this.OnDestroyed;
-                        enemy.GetComponent<EnemyAttackAgent>().OnFire += this.OnFire;
+                        enemy.GetComponent<HitPointsComponent>().hpEmpty += OnDestroyed;
+                        enemy.GetComponent<EnemyAttackAgent>().OnFire += OnFire;
                     }    
                 }
             }
@@ -32,8 +32,8 @@ namespace ShootEmUp
         {
             if (_activeEnemies.Remove(enemy))
             {
-                enemy.GetComponent<HitPointsComponent>().hpEmpty -= this.OnDestroyed;
-                enemy.GetComponent<EnemyAttackAgent>().OnFire -= this.OnFire;
+                enemy.GetComponent<HitPointsComponent>().hpEmpty -= OnDestroyed;
+                enemy.GetComponent<EnemyAttackAgent>().OnFire -= OnFire;
 
                 _enemyPool.UnSpawnEnemy(enemy);
             }
