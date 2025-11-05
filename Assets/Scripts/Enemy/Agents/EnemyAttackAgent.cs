@@ -17,12 +17,14 @@ namespace ShootEmUp
             _target = target;
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (!moveAgent.IsReached)
             {
                 return;
             }
+            if(_target == null)
+                return;
             
             if (!_target.GetComponent<HitPointsComponent>().IsHitPointsExists())
             {

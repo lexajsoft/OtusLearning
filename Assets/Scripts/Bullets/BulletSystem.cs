@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
@@ -11,6 +12,7 @@ namespace ShootEmUp
         [SerializeField] private Transform worldTransform;
         [SerializeField] private LevelBounds levelBounds;
 
+        [Inject] private Bullet.Factory _bulletFactory;
         private readonly Queue<Bullet> _bulletPool = new();
         private readonly HashSet<Bullet> _activeBullets = new();
         private readonly List<Bullet> _cache = new();
@@ -19,11 +21,17 @@ namespace ShootEmUp
         {
             for (var i = 0; i < initialCount; i++)
             {
-                var bullet = Instantiate(prefab, container);
-                _bulletPool.Enqueue(bullet);
+                CreateBulletToQueue();
             }
         }
-        
+
+        private void CreateBulletToQueue()
+        {
+            var bullet = _bulletFactory.Create();
+            bullet.gameObject.transform.SetParent(container);
+            _bulletPool.Enqueue(bullet);
+        }
+
         private void Update()
         {
             _cache.Clear();
@@ -41,13 +49,17 @@ namespace ShootEmUp
 
         public void CreateBulletByArgs(Args args)
         {
+            if (_bulletPool.Count == 0)
+                CreateBulletToQueue();
+            
             if (_bulletPool.TryDequeue(out var bullet))
             {
                 bullet.transform.SetParent(worldTransform);
             }
             else
             {
-                bullet = Instantiate(prefab, worldTransform);
+                Debug.LogError("Не удалось получить пулю из пула");
+                return;
             }
 
             bullet.SetPosition(args.position);

@@ -10,6 +10,5 @@ public class Boot : MonoBehaviour
     private void Awake()
     {
         _sceneContext.Run();
-        InputManagerInstaller2.Install(_sceneContext.Container);
     }
 }

@@ -1,16 +1,10 @@
-﻿using Zenject;
+﻿using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
-    public class InputManagerInstaller : MonoInstaller
-    {
-        public override void InstallBindings()
-        {
-            Container.BindInterfacesAndSelfTo<InputManager>().AsSingle();
-        }
-    }
-    
-    public class InputManagerInstaller2 : Installer<InputManagerInstaller2>
+    [CreateAssetMenu(menuName = "Installers/" + nameof(InputManagerInstaller))]
+    public class InputManagerInstaller : ScriptableObjectInstaller
     {
         public override void InstallBindings()
         {

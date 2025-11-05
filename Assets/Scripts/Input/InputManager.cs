@@ -5,7 +5,7 @@ using Zenject;
 
 namespace ShootEmUp
 {
-    public sealed class InputManager : ITickable
+    public sealed class InputManager :  IInitializable,ITickable
     {
         public float HorizontalDirection { get; private set; }
 
@@ -14,7 +14,7 @@ namespace ShootEmUp
 
         public void Tick()
         {
-            Debug.Log("Tick");
+            //Debug.Log("Tick");
             if (Input.GetKey(KeyCode.Space))
             {
                 OnFire?.Invoke();
@@ -22,6 +22,11 @@ namespace ShootEmUp
 
             HorizontalDirection = Input.GetAxis("Horizontal");
             OnHorizontalMove?.Invoke((int)HorizontalDirection);
+        }
+
+        public void Initialize()
+        {
+            
         }
     }
 }

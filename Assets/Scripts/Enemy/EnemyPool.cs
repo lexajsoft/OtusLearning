@@ -12,25 +12,26 @@ namespace ShootEmUp
         [Header("Pool")] 
         [SerializeField] private Transform _container;
 
-        [Inject] private DiContainer _diContainer;
+        [SerializeField] private int _prepareEnemyCount = 10;
         [Inject] private GameManager _gameManager;
+        [Inject] private Enemy.Factory _enemyFactory;
+        [Inject(Id = ServiceIds.EnemyBulletConfig)] private BulletConfig _bulletConfig;
 
-        [Inject(Id = ServiceIds.EnemyBulletConfig)]
-        private BulletConfig _bulletConfig;
-
-        [Inject(Id = ServiceIds.EnemyPrefab)] 
-        private GameObject _prefab;
-
-        private readonly Queue<GameObject> _enemyPool = new();
+        private readonly Queue<Enemy> _enemyPool = new();
         private GameObject _character;
 
 
-        private void Awake()
+        private void Start()
         {
+            
             _gameManager.OnCharacterChanged += OnCharacterChanged;
-            for (var i = 0; i < 7; i++)
+            if(_gameManager.Character != null)
+                OnCharacterChanged(_gameManager.Character);
+            
+            for (var i = 0; i < _prepareEnemyCount; i++)
             {
-                var enemy = _diContainer.InstantiatePrefab(_prefab, _container);
+                var enemy = _enemyFactory.Create(_bulletConfig);
+                enemy.transform.SetParent(_container);
                 _enemyPool.Enqueue(enemy);
             }
         }
@@ -46,7 +47,7 @@ namespace ShootEmUp
             foreach (var obj in _enemyPool) obj.GetComponent<EnemyAttackAgent>().SetTarget(_character);
         }
 
-        public GameObject SpawnEnemy()
+        public Enemy SpawnEnemy()
         {
             if (_character == null)
                 return null;
@@ -59,13 +60,12 @@ namespace ShootEmUp
             enemy.transform.position = spawnPosition.position;
 
             var attackPosition = _enemyPositions.RandomAttackPosition();
-            enemy.GetComponent<EnemyMoveAgent>().SetDestination(attackPosition.position);
-            enemy.GetComponent<EnemyAttackAgent>().SetTarget(_character);
-            enemy.GetComponent<WeaponComponent>().SetConfig(_bulletConfig);
+            enemy.EnemyMoveAgent.SetDestination(attackPosition.position);
+            enemy.EnemyAttackAgent.SetTarget(_character);
             return enemy;
         }
 
-        public void UnSpawnEnemy(GameObject enemy)
+        public void UnSpawnEnemy(Enemy enemy)
         {
             enemy.transform.SetParent(_container);
             _enemyPool.Enqueue(enemy);

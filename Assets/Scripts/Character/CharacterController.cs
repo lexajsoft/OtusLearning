@@ -11,38 +11,38 @@ namespace ShootEmUp
         [SerializeField] private GameObject _container;
         [SerializeField] private GameObject _position;
         
-        [Inject(Id = ServiceIds.PlayerPrefab)] private GameObject _characterPrefab;
         [Inject(Id = ServiceIds.PlayerBulletConfig)] private BulletConfig _bulletConfig;
         [Inject] private InputManager _inputManager;
         [Inject] private GameManager _gameManager;
-        [Inject] private DiContainer _diContainer;
+        [Inject] private Player.Factory _factory;
         
         private MoveComponent _moveComponent;
         private WeaponComponent _weapon;
         private bool _fireRequired;
-
+        private Player _player;
+        
         private void OnEnable()
         {
             CreatePlayer();
-            _gameManager.SetCharacterGameObject(_character);
+            _gameManager.SetCharacterGameObject(_player.gameObject);
+            
+            _player.HitPointsComponent.hpEmpty+= OnCharacterDeath;
+            
             _inputManager.OnFire += Fire;
             _inputManager.OnHorizontalMove += HorizontalMove;
-            _character.GetComponent<HitPointsComponent>().hpEmpty += OnCharacterDeath;
-            _moveComponent = _character.GetComponent<MoveComponent>();
-            _weapon = _character.GetComponent<WeaponComponent>();
-            _weapon.SetConfig(_bulletConfig);
         }
 
         private void CreatePlayer()
         {
-            _character = _diContainer.InstantiatePrefab(_characterPrefab);
-            _character.transform.SetParent(_container.transform);
-            _character.transform.position = _position.transform.position;
+            _player = _factory.Create(_bulletConfig);
+            _player.transform.SetParent(_container.transform);
+            _player.transform.position = _position.transform.position;
         }
 
         private void HorizontalMove(int horizontalValue)
         {
-            _moveComponent.SetDirectMove(new Vector2(horizontalValue, 0) * Time.fixedDeltaTime);
+            if(_player != null && _player.MoveComponent != null)
+                _player.MoveComponent.SetDirectMove(new Vector2(horizontalValue, 0) * Time.fixedDeltaTime);
         }
 
         private void Fire()
@@ -54,7 +54,7 @@ namespace ShootEmUp
         {
             _inputManager.OnFire += Fire;
             _inputManager.OnHorizontalMove += HorizontalMove;
-            if (_character.TryGetComponent<HitPointsComponent>(out var hitPointsComponent))
+            if (_character != null && _character.TryGetComponent<HitPointsComponent>(out var hitPointsComponent))
             {
                 hitPointsComponent.hpEmpty -= OnCharacterDeath;
             }
@@ -69,7 +69,7 @@ namespace ShootEmUp
         {
             if (_fireRequired)
             {
-                _weapon.Fire();
+                _player?.WeaponComponent.Fire();
                 _fireRequired = false;
             }
         }

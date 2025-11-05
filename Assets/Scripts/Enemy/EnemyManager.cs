@@ -19,7 +19,7 @@ namespace ShootEmUp
                 var enemy = _enemyPool.SpawnEnemy();
                 if (enemy != null)
                 {
-                    if (_activeEnemies.Add(enemy))
+                    if (_activeEnemies.Add(enemy.gameObject))
                     {
                         enemy.GetComponent<HitPointsComponent>().hpEmpty += OnDestroyed;
                         enemy.GetComponent<EnemyAttackAgent>().OnFire += OnFire;
@@ -28,20 +28,26 @@ namespace ShootEmUp
             }
         }
 
-        private void OnDestroyed(GameObject enemy)
+        private void OnDestroyed(GameObject enemyGameObject)
         {
-            if (_activeEnemies.Remove(enemy))
+            if (_activeEnemies.Remove(enemyGameObject))
             {
-                enemy.GetComponent<HitPointsComponent>().hpEmpty -= OnDestroyed;
-                enemy.GetComponent<EnemyAttackAgent>().OnFire -= OnFire;
-
-                _enemyPool.UnSpawnEnemy(enemy);
+                if (enemyGameObject.TryGetComponent<Enemy>(out var enemy))
+                {
+                    enemy.GetComponent<HitPointsComponent>().hpEmpty -= OnDestroyed;
+                    enemy.GetComponent<EnemyAttackAgent>().OnFire -= OnFire;
+                    _enemyPool.UnSpawnEnemy(enemy);
+                }
             }
         }
 
-        private void OnFire(GameObject enemy)
+        private void OnFire(GameObject enemyGameObject)
         {
-            enemy.GetComponent<WeaponComponent>().Fire();
+            if(enemyGameObject.TryGetComponent<Enemy>(out var enemy))
+            {
+                enemy.WeaponComponent.Fire();
+            }
+            
         }
     }
 }

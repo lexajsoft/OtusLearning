@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
@@ -35,6 +36,11 @@ namespace ShootEmUp
         public void SetColor(Color color)
         {
             spriteRenderer.color = color;
+        }
+
+        public class Factory : PlaceholderFactory<Bullet>
+        {
+            
         }
     }
 }
