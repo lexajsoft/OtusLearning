@@ -1,19 +1,17 @@
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace ShootEmUp
 {
-    public sealed class CharacterController : MonoBehaviour
+    public sealed class PlayerController : MonoBehaviour
     {
-        [SerializeField] private GameObject _character;
+        //[SerializeField] private GameObject _character;
         [SerializeField] private GameObject _container;
         [SerializeField] private GameObject _position;
         
         [Inject(Id = ServiceIds.PlayerBulletConfig)] private BulletConfig _bulletConfig;
-        [Inject] private InputManager _inputManager;
-        [Inject] private GameManager _gameManager;
+        [Inject] private IInputManager _inputManager;
+        [Inject] private IGameManager _gameManager;
         [Inject] private Player.Factory _factory;
         
         private MoveComponent _moveComponent;
@@ -24,9 +22,9 @@ namespace ShootEmUp
         private void OnEnable()
         {
             CreatePlayer();
-            _gameManager.SetCharacterGameObject(_player.gameObject);
+            _gameManager.SetCharacterGameObject(_player);
             
-            _player.HitPointsComponent.hpEmpty+= OnCharacterDeath;
+            _player.HitPointsComponent.hpEmpty+= OnPlayerDeath;
             
             _inputManager.OnFire += Fire;
             _inputManager.OnHorizontalMove += HorizontalMove;
@@ -41,7 +39,7 @@ namespace ShootEmUp
 
         private void HorizontalMove(int horizontalValue)
         {
-            if(_player != null && _player.MoveComponent != null)
+            if(_player != null)
                 _player.MoveComponent.SetDirectMove(new Vector2(horizontalValue, 0) * Time.fixedDeltaTime);
         }
 
@@ -54,13 +52,13 @@ namespace ShootEmUp
         {
             _inputManager.OnFire += Fire;
             _inputManager.OnHorizontalMove += HorizontalMove;
-            if (_character != null && _character.TryGetComponent<HitPointsComponent>(out var hitPointsComponent))
+            if (_player != null)
             {
-                hitPointsComponent.hpEmpty -= OnCharacterDeath;
+                _player.HitPointsComponent.hpEmpty -= OnPlayerDeath;
             }
         }
 
-        private void OnCharacterDeath(GameObject _)
+        private void OnPlayerDeath(GameObject _)
         {
             _gameManager.FinishGame();
         }

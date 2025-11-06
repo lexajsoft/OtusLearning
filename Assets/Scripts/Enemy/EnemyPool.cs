@@ -13,20 +13,19 @@ namespace ShootEmUp
         [SerializeField] private Transform _container;
 
         [SerializeField] private int _prepareEnemyCount = 10;
-        [Inject] private GameManager _gameManager;
-        [Inject] private Enemy.Factory _enemyFactory;
+        [Inject] private IGameManager _gameManager;
+        [Inject] private ShootEmUp.Enemy.Factory _enemyFactory;
         [Inject(Id = ServiceIds.EnemyBulletConfig)] private BulletConfig _bulletConfig;
 
-        private readonly Queue<Enemy> _enemyPool = new();
+        private readonly Queue<ShootEmUp.Enemy> _enemyPool = new();
         private GameObject _character;
 
 
         private void Start()
         {
-            
-            _gameManager.OnCharacterChanged += OnCharacterChanged;
-            if(_gameManager.Character != null)
-                OnCharacterChanged(_gameManager.Character);
+            _gameManager.OnPlayerChanged += OnPlayerChanged;
+            if(_gameManager.Player != null)
+                OnPlayerChanged(_gameManager.Player);
             
             for (var i = 0; i < _prepareEnemyCount; i++)
             {
@@ -38,16 +37,16 @@ namespace ShootEmUp
 
         private void OnDestroy()
         {
-            _gameManager.OnCharacterChanged -= OnCharacterChanged;
+            _gameManager.OnPlayerChanged -= OnPlayerChanged;
         }
 
-        private void OnCharacterChanged(GameObject character)
+        private void OnPlayerChanged(Player player)
         {
-            _character = character;
+            _character = player.gameObject;
             foreach (var obj in _enemyPool) obj.GetComponent<EnemyAttackAgent>().SetTarget(_character);
         }
 
-        public Enemy SpawnEnemy()
+        public ShootEmUp.Enemy SpawnEnemy()
         {
             if (_character == null)
                 return null;
@@ -65,7 +64,7 @@ namespace ShootEmUp
             return enemy;
         }
 
-        public void UnSpawnEnemy(Enemy enemy)
+        public void UnSpawnEnemy(ShootEmUp.Enemy enemy)
         {
             enemy.transform.SetParent(_container);
             _enemyPool.Enqueue(enemy);

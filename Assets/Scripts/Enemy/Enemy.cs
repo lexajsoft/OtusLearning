@@ -1,23 +1,25 @@
-using ShootEmUp;
 using UnityEngine;
 using Zenject;
 
-public class Enemy : Npc
+namespace ShootEmUp
 {
-    [SerializeField] private EnemyMoveAgent _enemyMoveAgent;
-    [SerializeField] private EnemyAttackAgent _enemyAttackAgent;
-
-    public EnemyAttackAgent EnemyAttackAgent => _enemyAttackAgent;
-    public EnemyMoveAgent EnemyMoveAgent => _enemyMoveAgent;
-
-    [Inject]
-    public void Construct(BulletConfig config)
+    public class Enemy : Npc
     {
-        WeaponComponent.SetConfig(config);
-    }
+        [SerializeField] private EnemyMoveAgent _enemyMoveAgent;
+        [SerializeField] private EnemyAttackAgent _enemyAttackAgent;
+
+        public EnemyAttackAgent EnemyAttackAgent => _enemyAttackAgent;
+        public EnemyMoveAgent EnemyMoveAgent => _enemyMoveAgent;
+
+        [Inject]
+        public void Construct(BulletConfig config)
+        {
+            WeaponComponent.SetConfig(config);
+        }
     
-    public class Factory : PlaceholderFactory<BulletConfig,Enemy>
-    {
+        public class Factory : PlaceholderFactory<BulletConfig,Enemy>
+        {
         
+        }
     }
 }

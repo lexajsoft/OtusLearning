@@ -1,16 +1,18 @@
-using ShootEmUp;
 using Zenject;
 
-public class Player : Npc
+namespace ShootEmUp
 {
-    [Inject]
-    public void Construct(BulletConfig config)
+    public class Player : Npc
     {
-        WeaponComponent.SetConfig(config);
-    }
-    
-    public class Factory : PlaceholderFactory<BulletConfig, Player>
-    {
-         
+        [Inject]
+        public void Construct(BulletConfig config)
+        {
+            WeaponComponent.SetConfig(config);
+        }
+
+        public class Factory : PlaceholderFactory<BulletConfig, Player>
+        {
+
+        }
     }
 }

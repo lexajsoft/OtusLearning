@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 
 namespace ShootEmUp
 {
@@ -21,8 +20,8 @@ namespace ShootEmUp
                 {
                     if (_activeEnemies.Add(enemy.gameObject))
                     {
-                        enemy.GetComponent<HitPointsComponent>().hpEmpty += OnDestroyed;
-                        enemy.GetComponent<EnemyAttackAgent>().OnFire += OnFire;
+                        enemy.HitPointsComponent.hpEmpty += OnDestroyed;
+                        enemy.EnemyAttackAgent.OnFire += OnFire;
                     }    
                 }
             }
@@ -32,10 +31,10 @@ namespace ShootEmUp
         {
             if (_activeEnemies.Remove(enemyGameObject))
             {
-                if (enemyGameObject.TryGetComponent<Enemy>(out var enemy))
+                if (enemyGameObject.TryGetComponent<ShootEmUp.Enemy>(out var enemy))
                 {
-                    enemy.GetComponent<HitPointsComponent>().hpEmpty -= OnDestroyed;
-                    enemy.GetComponent<EnemyAttackAgent>().OnFire -= OnFire;
+                    enemy.HitPointsComponent.hpEmpty -= OnDestroyed;
+                    enemy.EnemyAttackAgent.OnFire -= OnFire;
                     _enemyPool.UnSpawnEnemy(enemy);
                 }
             }
@@ -43,7 +42,7 @@ namespace ShootEmUp
 
         private void OnFire(GameObject enemyGameObject)
         {
-            if(enemyGameObject.TryGetComponent<Enemy>(out var enemy))
+            if(enemyGameObject.TryGetComponent<ShootEmUp.Enemy>(out var enemy))
             {
                 enemy.WeaponComponent.Fire();
             }

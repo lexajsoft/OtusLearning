@@ -4,15 +4,23 @@ using UnityEngine.SceneManagement;
 
 namespace ShootEmUp
 {
-    public sealed class GameManager
+    public interface IGameManager
     {
-        public GameObject Character { get; private set; }
+        Player Player { get; }
+        event Action<Player> OnPlayerChanged;
+        void SetCharacterGameObject(Player player);
+        void FinishGame();
+    }
 
-        public Action<GameObject> OnCharacterChanged; 
-        public void SetCharacterGameObject(GameObject character)
+    public sealed class GameManager : IGameManager
+    {
+        public Player Player { get; private set; }
+
+        public event Action<Player> OnPlayerChanged; 
+        public void SetCharacterGameObject(Player player)
         {
-            Character = character;
-            OnCharacterChanged?.Invoke(Character);
+            Player = player;
+            OnPlayerChanged?.Invoke(Player);
         }
 
         public void FinishGame()

@@ -1,14 +1,16 @@
-using ShootEmUp;
 using UnityEngine;
 using Zenject;
 
-public class GameInstaller : MonoInstaller
+namespace ShootEmUp
 {
-    [SerializeField] private BulletSystem _bulletSystem;
-
-    public override void InstallBindings()
+    public class GameInstaller : MonoInstaller
     {
-        Debug.Log("InstallBindings : GameInstaller");
-        Container.Bind<BulletSystem>().FromInstance(_bulletSystem);
+        [SerializeField] private BulletSystem _bulletSystem;
+
+        public override void InstallBindings()
+        {
+            Debug.Log("InstallBindings : GameInstaller");
+            Container.Bind<BulletSystem>().FromInstance(_bulletSystem);
+        }
     }
 }

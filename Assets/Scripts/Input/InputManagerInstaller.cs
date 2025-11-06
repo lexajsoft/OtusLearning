@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Zenject;
 
 namespace ShootEmUp
@@ -8,7 +9,26 @@ namespace ShootEmUp
     {
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<InputManager>().AsSingle();
+
+            Container.Bind<InputManager>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<IInputManager>()
+                .To<InputManager>()
+                .FromResolve();
+
+            Container.Bind<IInitializable>()
+                .To<InputManager>()
+                .FromResolve();
+
+            Container.Bind<ITickable>()
+                .To<InputManager>()
+                .FromResolve();
+
+            Container.Bind<IDisposable>()
+                .To<InputManager>()
+                .FromResolve();
         }
     }
 }

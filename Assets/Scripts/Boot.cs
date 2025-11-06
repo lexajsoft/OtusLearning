@@ -1,14 +1,16 @@
-using System;
-using ShootEmUp;
 using UnityEngine;
 using Zenject;
 
-[DefaultExecutionOrder(-1000)]
-public class Boot : MonoBehaviour
+namespace ShootEmUp
 {
-    [SerializeField] private SceneContext _sceneContext;
-    private void Awake()
+    [DefaultExecutionOrder(-1000)]
+    public class Boot : MonoBehaviour
     {
-        _sceneContext.Run();
+        [SerializeField] private SceneContext _sceneContext;
+
+        private void Awake()
+        {
+            _sceneContext.Run();
+        }
     }
 }

@@ -2,57 +2,59 @@
 using UnityEngine;
 using Zenject;
 
-public static class ServiceIds
+namespace ShootEmUp
 {
-    public const string PlayerBulletConfig = nameof(PlayerBulletConfig);
-    public const string EnemyBulletConfig = nameof(EnemyBulletConfig);
-}
-
-[CreateAssetMenu(fileName = "GameConfigInstaller", menuName = "Installers/" + nameof(SettingConfigInstaller))]
-public class SettingConfigInstaller : ScriptableObjectInstaller<SettingConfigInstaller>
-{
-    [SerializeField] private BulletConfig _playerBulletConfig;
-    [SerializeField] private BulletConfig _enemyBulletConfig;
-    [SerializeField] private Player _playerPrefab;
-    [SerializeField] private Enemy _enemyPrefab;
-    [SerializeField] private Bullet _bulletPrefab;
-     private GameManager _gameManager;
-    
-    public override void InstallBindings()
+    public static class ServiceIds
     {
-        Debug.Log("InstallBindings : SettingConfig");
-        BulletConfigsInstall();
-        BulletFactoryInstall();
-        GameManagerInstall();
-        FactoriesInstall();
+        public const string PlayerBulletConfig = nameof(PlayerBulletConfig);
+        public const string EnemyBulletConfig = nameof(EnemyBulletConfig);
     }
 
-    private void GameManagerInstall()
+    [CreateAssetMenu(fileName = "GameConfigInstaller", menuName = "Installers/" + nameof(SettingConfigInstaller))]
+    public class SettingConfigInstaller : ScriptableObjectInstaller<SettingConfigInstaller>
     {
-        Container.Bind<GameManager>().AsSingle();
-    }
+        [SerializeField] private BulletConfig _playerBulletConfig;
+        [SerializeField] private BulletConfig _enemyBulletConfig;
+        [SerializeField] private Player _playerPrefab;
+        [SerializeField] private ShootEmUp.Enemy _enemyPrefab;
+        [SerializeField] private Bullet _bulletPrefab;
 
-    private void BulletFactoryInstall()
-    {
-        Container.BindFactory<Bullet, Bullet.Factory>()
-            .FromComponentInNewPrefab(_bulletPrefab)
-            .WithGameObjectName("Bullet");
-    }
+        public override void InstallBindings()
+        {
+            Debug.Log("SettingConfigInstaller.InstallBindings");
+            BulletConfigsInstall();
+            BulletFactoryInstall();
+            GameManagerInstall();
+            FactoriesInstall();
+        }
 
-    private void FactoriesInstall()
-    {
-        Container.BindFactory<BulletConfig, Player, Player.Factory>()
-            .FromComponentInNewPrefab(_playerPrefab)
-            .WithGameObjectName("Player");
+        private void GameManagerInstall()
+        {
+            Container.Bind<IGameManager>().To<GameManager>().AsSingle();
+        }
 
-        Container.BindFactory<BulletConfig, Enemy, Enemy.Factory>()
-            .FromComponentInNewPrefab(_enemyPrefab)
-            .WithGameObjectName("Enemy");
-    }
+        private void BulletFactoryInstall()
+        {
+            Container.BindFactory<Bullet, Bullet.Factory>()
+                .FromComponentInNewPrefab(_bulletPrefab)
+                .WithGameObjectName("Bullet");
+        }
 
-    private void BulletConfigsInstall()
-    {
-        Container.Bind<BulletConfig>().WithId(ServiceIds.PlayerBulletConfig).FromInstance(_playerBulletConfig);
-        Container.Bind<BulletConfig>().WithId(ServiceIds.EnemyBulletConfig).FromInstance(_enemyBulletConfig);
+        private void FactoriesInstall()
+        {
+            Container.BindFactory<BulletConfig, Player, Player.Factory>()
+                .FromComponentInNewPrefab(_playerPrefab)
+                .WithGameObjectName("Player");
+
+            Container.BindFactory<BulletConfig, ShootEmUp.Enemy, ShootEmUp.Enemy.Factory>()
+                .FromComponentInNewPrefab(_enemyPrefab)
+                .WithGameObjectName("Enemy");
+        }
+
+        private void BulletConfigsInstall()
+        {
+            Container.Bind<BulletConfig>().WithId(ServiceIds.PlayerBulletConfig).FromInstance(_playerBulletConfig);
+            Container.Bind<BulletConfig>().WithId(ServiceIds.EnemyBulletConfig).FromInstance(_enemyBulletConfig);
+        }
     }
 }
