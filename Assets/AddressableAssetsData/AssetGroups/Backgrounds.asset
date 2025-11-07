@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Backgrounds
+  m_EditorClassIdentifier: 
+  m_GroupName: Backgrounds
+  m_GUID: 358c73b0f4e3642429ec75da35126d34
+  m_SerializeEntries:
+  - m_GUID: 2274a895fc9d94040b22c92d1c8f5c1b
+    m_Address: Image (8)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 322f31f65306a8a4c9459a726634649e
+    m_Address: Image (2)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 32af43f3e2933e54eb1fd8d311884d21
+    m_Address: Image (6)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81e27027f06fd45449a23c8b2ab5161a
+    m_Address: Image (10)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f606fb087756b6488c6104689d1179c
+    m_Address: Image (9)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98da1eb7d1336874dbd88a5c4635cc08
+    m_Address: Image (7)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a356d106562338647aba465d6481a792
+    m_Address: Image (3)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cdedac50cce39d94fad12c58545d4cc4
+    m_Address: Image (4)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4f08da13b0917c4f9dc078acfec8980
+    m_Address: Image (1)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9dab67737151ff479266c3730279912
+    m_Address: Image (5)
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Background
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2e02139f186c13244a9c7ac742bcb3fd, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 183859ea9218fee4a80ff572b1bc56bf, type: 2}
+    - {fileID: 11400000, guid: dce5358af44a99c4fbd320ebb038890f, type: 2}
